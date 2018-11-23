@@ -15,6 +15,9 @@ class Repository {
     constructor(application : Application){
         wordDao = MyDatabase.getDatabase(application).wordDao()
         allWords = wordDao.selectAll()
+        allWords?.observeForever {
+            Log.e("RoomDao", "List just arrived! last Value is "+it?.get(it?.size-1)?.getWord() )
+        }
     }
 
     fun getAllWords(): LiveData<List<Word>>? {
@@ -33,6 +36,7 @@ class Repository {
             override fun run() {
                 Log.e("room", "run persist")
                 wordDao.persist(word)
+                wordDao.triggerUpdate()
             }
         }
         Thread(Task(word)).start()

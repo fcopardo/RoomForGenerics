@@ -1,6 +1,7 @@
 package com.pardo.roomworldsample.main
 
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.ViewGroup
 import com.pardo.roomwithaword.entities.Word
 import com.pardo.roomworldsample.ui.GenericViewHolder
@@ -26,7 +27,8 @@ class WordAdapter : RecyclerView.Adapter<GenericViewHolder<CellUI, Word>>() {
     }
 
     fun setElements(list : List<Word>){
-        elements.removeAll(list)
+        Log.e("Room", "reset adapter :"+ elements.size+" - "+list.size)
+        elements.clear()
         elements.addAll(list)
         notifyDataSetChanged()
     }

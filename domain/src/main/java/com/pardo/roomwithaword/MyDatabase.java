@@ -32,11 +32,10 @@ public abstract class MyDatabase extends RoomDatabase {
 
     private static RoomDatabase.Callback sRoomDatabaseCallback =
             new RoomDatabase.Callback(){
-
                 @Override
                 public void onOpen (@NonNull SupportSQLiteDatabase db){
                     super.onOpen(db);
-                    new PopulateDbAsync(INSTANCE).execute();
+                    new PopulateDbAsync(INSTANCE).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
             };
 

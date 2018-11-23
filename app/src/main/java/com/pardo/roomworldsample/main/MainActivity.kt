@@ -12,6 +12,11 @@ import com.pardo.roomwithaword.WordViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.Toast
 import android.content.Intent
+import android.support.design.widget.CoordinatorLayout
+import android.support.v4.view.AsyncLayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import com.pardo.roomwithaword.entities.Word
 import com.pardo.roomworldsample.R
 import com.pardo.roomworldsample.crud.NewWordActivity
@@ -23,10 +28,19 @@ class MainActivity : AppCompatActivity() {
         const val NEW_WORD_ACTIVITY_REQUEST_CODE = 1
     }
 
-    lateinit var myUI : MainUI
-    lateinit var layout : ConstraintLayout
+    lateinit var layout : FrameLayout
     lateinit var fab : FloatingActionButton
-    lateinit var wordViewModel : WordViewModel
+    var myUI : MainUI? = null
+    var wordViewModel : WordViewModel? = null
+
+    override fun onResume() {
+        super.onResume()
+        wordViewModel?.getAllWords()?.observe(this, Observer<List<Word>> { t ->
+            if (t != null) {
+                myUI?.setData(t)
+            }
+        })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,18 +48,23 @@ class MainActivity : AppCompatActivity() {
         wordViewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
 
         myUI = MainUI(this)
-        setContentView(R.layout.activity_main)
-        layout = findViewById(R.id.main_content)
-        fab = findViewById(R.id.fab)
+        val inflater = AsyncLayoutInflater(this)
+        inflater.inflate(R.layout.activity_main, myUI, object : AsyncLayoutInflater.OnInflateFinishedListener{
+            override fun onInflateFinished(p0: View, p1: Int, p2: ViewGroup?) {
+                setContentView(p0)
+                layout = findViewById(R.id.main_content)
+                fab = this@MainActivity.findViewById(R.id.fab)
+                val params = CoordinatorLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+                myUI?.layoutParams = params
+                layout.addView(myUI)
+                fab.setOnClickListener { view ->
+                    val intent = Intent(this@MainActivity, NewWordActivity::class.java)
+                    startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE)
+                }
+            }
+        })
+
         setSupportActionBar(toolbar)
-        layout.addView(myUI)
-
-        wordViewModel.getAllWords()?.observe(this, Observer<List<Word>> { t -> myUI.setData(t!!) })
-
-        fab.setOnClickListener { view ->
-            val intent = Intent(this@MainActivity, NewWordActivity::class.java)
-            startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE)
-        }
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -53,7 +72,7 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             val word = Word(data!!.getStringExtra(NewWordActivity.EXTRA_REPLY))
-            wordViewModel.persist(word)
+            wordViewModel?.persist(word)
         } else {
             Toast.makeText(
                     applicationContext,
