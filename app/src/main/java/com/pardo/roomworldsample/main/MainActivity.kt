@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        wordViewModel?.getAllWords()?.observe(this, Observer<List<Word>> { t ->
+        wordViewModel?.getAllWords()?.observe(this, Observer<MutableList<Word>> { t ->
             if (t != null) {
                 myUI?.setData(t)
             }

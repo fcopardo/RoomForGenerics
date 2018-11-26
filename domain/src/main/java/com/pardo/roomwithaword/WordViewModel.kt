@@ -8,13 +8,13 @@ import com.pardo.roomwithaword.entities.Word
 class WordViewModel(application: Application) : AndroidViewModel(application) {
 
     private var repo : Repository = Repository(application)
-    private var allWords: LiveData<List<Word>>? = null
+    private var allWords: LiveData<MutableList<Word>>? = null
 
     init {
         allWords = repo.getAllWords()
     }
 
-    fun getAllWords() : LiveData<List<Word>>?{
+    fun getAllWords() : LiveData<MutableList<Word>>?{
         return allWords
     }
 

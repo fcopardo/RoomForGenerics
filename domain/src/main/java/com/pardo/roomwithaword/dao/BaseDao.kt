@@ -12,13 +12,13 @@ import android.util.Log
 @Dao
 abstract class BaseDao<T> : GenericDao<T> {
 
-    inner class Task(var data: MutableLiveData<List<T>>) : AsyncTask<Void, Void, List<T>>() {
+    inner class Task(var data: MutableLiveData<MutableList<T>>) : AsyncTask<Void, Void, MutableList<T>>() {
 
-        override fun doInBackground(vararg voids: Void): List<T> {
-            return selectAll(SimpleSQLiteQuery("SELECT * FROM " + myClass!!.simpleName))
+        override fun doInBackground(vararg voids: Void): MutableList<T> {
+            return selectAll(SimpleSQLiteQuery("SELECT * FROM " + getTableName()))
         }
 
-        override fun onPostExecute(result: List<T>) {
+        override fun onPostExecute(result: MutableList<T>) {
             Log.e("RoomDao", "values reset")
             data.value = result
         }
@@ -30,13 +30,13 @@ abstract class BaseDao<T> : GenericDao<T> {
     }
 
     protected var myClass: Class<T>? = null
-    protected val data = MutableLiveData<List<T>>()
 
     @RawQuery
-    abstract fun selectAll(query: SupportSQLiteQuery): List<T>
+    abstract fun selectAll(query: SupportSQLiteQuery): MutableList<T>
 
-    fun selectAll(): LiveData<List<T>> {
+    fun selectAll(): LiveData<MutableList<T>> {
         Log.e("RoomDao", "called select all")
+        val data = MutableLiveData<MutableList<T>>()
         Task(data).executeMe()
         return data
     }
@@ -46,15 +46,19 @@ abstract class BaseDao<T> : GenericDao<T> {
 
     fun deleteAll(): Boolean {
         try {
-            deleteAll(SimpleSQLiteQuery("DELETE FROM " + myClass!!.simpleName))
+            deleteAll(SimpleSQLiteQuery("DELETE FROM " + getTableName()))
         } catch (e: Exception) {
             return false
         }
         return true
     }
 
-    override fun triggerUpdate() {
+    fun triggerUpdate(data : MutableLiveData<MutableList<T>>) {
         Task(data).executeMe()
+    }
+
+    fun getTableName() : String{
+        return myClass!!.simpleName
     }
 
 }

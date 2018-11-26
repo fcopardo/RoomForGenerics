@@ -25,8 +25,5 @@ interface GenericDao<T> {
     fun update(data: T)
 
     @Update
-    fun update(data: List<T>) 
-
-    fun triggerUpdate()
-
+    fun update(data: List<T>)
 }
