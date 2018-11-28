@@ -17,14 +17,20 @@ open class BaseRepository<T, X : BaseDao<T>> {
     constructor(application : Application, aClass : Class<X>){
         var database : MyDatabase = MyDatabase.getDatabase(application)
 
-        var method : Method? = database::class.java.getMethod(aClass.simpleName.decapitalize())
+        var method : Method? = if(database::class.java.getMethod(aClass.simpleName.decapitalize()) != null)
+            database::class.java.getMethod(aClass.simpleName.decapitalize())
+        else
+            database::class.java.getMethod(aClass.simpleName)
+
         method?.isAccessible = true
         myDao = method?.invoke(database) as X
+        myDao.setDB<X>(database)
 
         observers = HashMap()
 
         var observer : InvalidationTracker.Observer = object : InvalidationTracker.Observer(myDao.getTableName()) {
             override fun onInvalidated(tables: Set<String>) {
+                Log.e("RoomDB", "DAO Observer for table")
                 myDao.triggerUpdate(allResults!!)
             }
         }
@@ -49,9 +55,7 @@ open class BaseRepository<T, X : BaseDao<T>> {
             }
 
             override fun run() {
-                Log.e("room", "run persist")
                 myDao.persist(data)
-                //allResults?.value?.add(data)
             }
         }
         Thread(Task(data)).start()
