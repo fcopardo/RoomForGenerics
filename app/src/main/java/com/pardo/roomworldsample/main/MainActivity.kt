@@ -14,6 +14,7 @@ import android.widget.Toast
 import android.content.Intent
 import android.support.design.widget.CoordinatorLayout
 import android.support.v4.view.AsyncLayoutInflater
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -39,6 +40,7 @@ class MainActivity : AppCompatActivity() {
             if (t != null) {
                 myUI?.setData(t)
             }
+            Log.e("RoomDB", "viewmodel Observer called")
         })
     }
 

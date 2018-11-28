@@ -4,6 +4,7 @@ import android.content.Context
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import com.pardo.roomwithaword.entities.Word
@@ -12,6 +13,7 @@ import com.pardo.roomworldsample.ui.UI
 class MainUI : FrameLayout, UI<List<Word>> {
 
     override fun setData(data: List<Word>) {
+        Log.e("RoomDB", "called MainUI setData")
         adapter.setElements(data)
     }
 

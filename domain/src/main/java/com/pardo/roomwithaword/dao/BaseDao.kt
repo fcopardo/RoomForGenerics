@@ -6,8 +6,12 @@ import android.arch.persistence.db.SimpleSQLiteQuery
 import android.arch.persistence.db.SupportSQLiteQuery
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.RawQuery
+import android.arch.persistence.room.RoomDatabase
 import android.os.AsyncTask
 import android.util.Log
+import java.lang.reflect.Field
+import java.lang.reflect.Modifier
+
 
 @Dao
 abstract class BaseDao<T> : GenericDao<T> {
@@ -30,11 +34,12 @@ abstract class BaseDao<T> : GenericDao<T> {
     }
 
     protected var myClass: Class<T>? = null
+    private var database : RoomDatabase? = null
 
     @RawQuery
     abstract fun selectAll(query: SupportSQLiteQuery): MutableList<T>
 
-    fun selectAll(): LiveData<MutableList<T>> {
+    fun selectAll(): MutableLiveData<MutableList<T>> {
         Log.e("RoomDao", "called select all")
         val data = MutableLiveData<MutableList<T>>()
         Task(data).executeMe()
@@ -59,6 +64,15 @@ abstract class BaseDao<T> : GenericDao<T> {
 
     fun getTableName() : String{
         return myClass!!.simpleName
+    }
+
+    fun <X: BaseDao<T>> setDB(db: RoomDatabase) : X {
+        database = db
+        return this as X
+    }
+
+    fun getDatabase() : RoomDatabase?{
+        return database
     }
 
 }
