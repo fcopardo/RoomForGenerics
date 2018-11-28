@@ -21,4 +21,9 @@ class WordViewModel(application: Application) : AndroidViewModel(application) {
     fun persist(data : Word){
         repo.persist(data)
     }
+
+    override fun onCleared(){
+        super.onCleared()
+        repo.tearDown()
+    }
 }

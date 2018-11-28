@@ -82,6 +82,4 @@ class MainActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG).show()
         }
     }
-
-
 }
