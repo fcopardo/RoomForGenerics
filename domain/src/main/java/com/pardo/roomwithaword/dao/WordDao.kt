@@ -8,6 +8,7 @@ import android.arch.persistence.room.Query
 
 @Dao
 abstract class WordDao : BaseDao<Word>{
+
     constructor(){
         this.myClass = Word::class.java
     }

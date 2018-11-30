@@ -1,6 +1,5 @@
 package com.pardo.roomwithaword.dao
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.db.SimpleSQLiteQuery
 import android.arch.persistence.db.SupportSQLiteQuery
@@ -9,8 +8,6 @@ import android.arch.persistence.room.RawQuery
 import android.arch.persistence.room.RoomDatabase
 import android.os.AsyncTask
 import android.util.Log
-import java.lang.reflect.Field
-import java.lang.reflect.Modifier
 
 
 @Dao

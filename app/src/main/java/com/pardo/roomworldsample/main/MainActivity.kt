@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import com.pardo.roomwithaword.WordViewModel2
 import com.pardo.roomwithaword.entities.Word
 import com.pardo.roomworldsample.R
 import com.pardo.roomworldsample.crud.NewWordActivity
@@ -32,11 +33,11 @@ class MainActivity : AppCompatActivity() {
     lateinit var layout : FrameLayout
     lateinit var fab : FloatingActionButton
     var myUI : MainUI? = null
-    var wordViewModel : WordViewModel? = null
+    var wordViewModel : WordViewModel2? = null
 
     override fun onResume() {
         super.onResume()
-        wordViewModel?.getAllWords()?.observe(this, Observer<MutableList<Word>> { t ->
+        wordViewModel?.getAllData()?.observe(this, Observer<MutableList<Word>> { t ->
             if (t != null) {
                 myUI?.setData(t)
             }
@@ -47,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        wordViewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
+        wordViewModel = ViewModelProviders.of(this).get(WordViewModel2::class.java)
 
         myUI = MainUI(this)
         val inflater = AsyncLayoutInflater(this)

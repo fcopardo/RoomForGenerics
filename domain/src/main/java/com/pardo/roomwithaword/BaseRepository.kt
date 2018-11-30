@@ -30,7 +30,7 @@ open class BaseRepository<T, X : BaseDao<T>> {
 
         var observer : InvalidationTracker.Observer = object : InvalidationTracker.Observer(myDao.getTableName()) {
             override fun onInvalidated(tables: Set<String>) {
-                Log.e("RoomDB", "DAO Observer for table")
+                Log.e("RoomDB", "trigged repo observer")
                 myDao.triggerUpdate(allResults!!)
             }
         }
@@ -45,9 +45,13 @@ open class BaseRepository<T, X : BaseDao<T>> {
         return allResults
     }
 
+    fun insert(data : T){
+        cud(data, 1)
+    }
+
     fun persist(data : T){
 
-        class Task : Runnable{
+        /*class Task : Runnable{
             var data : T
 
             constructor(data : T){
@@ -58,7 +62,35 @@ open class BaseRepository<T, X : BaseDao<T>> {
                 myDao.persist(data)
             }
         }
-        Thread(Task(data)).start()
+        Thread(Task(data)).start()*/
+        cud(data, 3)
+    }
+
+    fun delete(data : T){
+        cud(data, 4)
+    }
+
+    private fun cud(data : T, operation : Int){
+        class Task : Runnable{
+            var data : T
+            var operation : Int
+
+            constructor(data : T, operation : Int){
+                this.data = data
+                this.operation = operation
+            }
+
+            override fun run() {
+                when(operation){
+                    1 -> myDao.insert(data)
+                    2 -> myDao.persist(data)
+                    3 -> myDao.persist(data)
+                    4 -> myDao.delete(data)
+                    else -> Log.e("RoomDB", "not implemented")
+                }
+            }
+        }
+        Thread(Task(data, operation)).start()
     }
 
     fun tearDown(){
