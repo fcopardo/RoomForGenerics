@@ -19,7 +19,6 @@ open class BaseRepository<T, X : BaseDao<T>> {
     private var observers : HashMap<String, InvalidationTracker.Observer>? = null
 
     constructor(application : Application, aClass : Class<X>, provider: DatabaseProvider){
-        //var database : MyDatabase = MyDatabase.getDatabase(application)
         var database = provider.getDatabase(application)
 
         var method : Method? = if(database::class.java.getMethod(aClass.simpleName.decapitalize()) != null)
@@ -54,20 +53,11 @@ open class BaseRepository<T, X : BaseDao<T>> {
         cud(data, 1)
     }
 
+    fun update(data : T){
+        cud(data, 2)
+    }
+
     fun persist(data : T){
-
-        /*class Task : Runnable{
-            var data : T
-
-            constructor(data : T){
-                this.data = data
-            }
-
-            override fun run() {
-                myDao.persist(data)
-            }
-        }
-        Thread(Task(data)).start()*/
         cud(data, 3)
     }
 
@@ -88,7 +78,7 @@ open class BaseRepository<T, X : BaseDao<T>> {
             override fun run() {
                 when(operation){
                     1 -> myDao.insert(data)
-                    2 -> myDao.persist(data)
+                    2 -> myDao.update(data)
                     3 -> myDao.persist(data)
                     4 -> myDao.delete(data)
                     else -> Log.e("RoomDB", "not implemented")
