@@ -4,10 +4,11 @@ import android.arch.persistence.room.Dao
 import com.pardo.roomwithaword.entities.Word
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.Query
+import com.github.fcopardo.room.BaseDao
 
 
 @Dao
-abstract class WordDao : BaseDao<Word>{
+abstract class WordDao : BaseDao<Word> {
 
     constructor(){
         this.myClass = Word::class.java

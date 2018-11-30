@@ -1,14 +1,13 @@
-package com.pardo.roomwithaword
+package com.github.fcopardo.room
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
-import com.pardo.roomwithaword.dao.BaseDao
 
-abstract class BaseViewModel<T, X: BaseDao<T>> (application: Application, daoClass: Class<X>)
+abstract class RoomViewModel<T, X: BaseDao<T>> (application: Application, daoClass: Class<X>, provider : BaseRepository.DatabaseProvider)
     : AndroidViewModel(application) {
 
-    private var repo : BaseRepository<T, X> = BaseRepository(application, daoClass)
+    private var repo : BaseRepository<T, X> = BaseRepository(application, daoClass, provider)
     private var allData: LiveData<MutableList<T>>? = null
 
     init {

@@ -1,21 +1,26 @@
-package com.pardo.roomwithaword
+package com.github.fcopardo.room
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.room.InvalidationTracker
+import android.arch.persistence.room.RoomDatabase
 import android.util.Log
-import com.pardo.roomwithaword.dao.BaseDao
 import java.lang.reflect.Method
 
 open class BaseRepository<T, X : BaseDao<T>> {
+
+    interface DatabaseProvider{
+        fun getDatabase(application: Application) : RoomDatabase
+    }
 
     private var myDao: X
     private var allResults: MutableLiveData<MutableList<T>>? = null
     private var observers : HashMap<String, InvalidationTracker.Observer>? = null
 
-    constructor(application : Application, aClass : Class<X>){
-        var database : MyDatabase = MyDatabase.getDatabase(application)
+    constructor(application : Application, aClass : Class<X>, provider: DatabaseProvider){
+        //var database : MyDatabase = MyDatabase.getDatabase(application)
+        var database = provider.getDatabase(application)
 
         var method : Method? = if(database::class.java.getMethod(aClass.simpleName.decapitalize()) != null)
             database::class.java.getMethod(aClass.simpleName.decapitalize())

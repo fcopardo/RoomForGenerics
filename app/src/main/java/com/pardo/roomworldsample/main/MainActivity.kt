@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var layout : FrameLayout
     lateinit var fab : FloatingActionButton
     var myUI : MainUI? = null
-    var wordViewModel : WordViewModel2? = null
+    var wordViewModel : WordViewModel? = null
 
     override fun onResume() {
         super.onResume()
@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        wordViewModel = ViewModelProviders.of(this).get(WordViewModel2::class.java)
+        wordViewModel = ViewModelProviders.of(this).get(WordViewModel::class.java)
 
         myUI = MainUI(this)
         val inflater = AsyncLayoutInflater(this)

@@ -1,4 +1,4 @@
-package com.pardo.roomwithaword.dao
+package com.github.fcopardo.room
 
 import android.arch.persistence.room.Dao
 import android.arch.persistence.room.Delete

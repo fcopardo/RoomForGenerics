@@ -1,31 +1,17 @@
 package com.pardo.roomwithaword
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
-import android.arch.lifecycle.LiveData
+import android.arch.persistence.room.RoomDatabase
+import com.github.fcopardo.room.BaseRepository
+import com.github.fcopardo.room.RoomViewModel
 import com.pardo.roomwithaword.dao.WordDao
 import com.pardo.roomwithaword.entities.Word
 
-class WordViewModel(application: Application) : AndroidViewModel(application) {
-
-    //private var repo : WordRepository = WordRepository(application)
-    private var repo : BaseRepository<Word, WordDao> = BaseRepository<Word, WordDao>(application, WordDao::class.java)
-    private var allWords: LiveData<MutableList<Word>>? = null
-
-    init {
-        allWords = repo.getAll()
-    }
-
-    fun getAllWords() : LiveData<MutableList<Word>>?{
-        return allWords
-    }
-
-    fun persist(data : Word){
-        repo.persist(data)
-    }
-
-    override fun onCleared(){
-        super.onCleared()
-        repo.tearDown()
-    }
-}
+class WordViewModel(application: Application)
+    : RoomViewModel<Word, WordDao>(application, WordDao::class.java,
+        object : BaseRepository.DatabaseProvider {
+            override fun getDatabase(application: Application): RoomDatabase {
+                return MyDatabase.getDatabase(application)
+            }
+        }
+)

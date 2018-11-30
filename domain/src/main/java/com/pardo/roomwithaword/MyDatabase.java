@@ -7,7 +7,7 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import com.pardo.roomwithaword.dao.BaseDao;
+import com.github.fcopardo.room.BaseDao;
 import com.pardo.roomwithaword.dao.WordDao;
 import com.pardo.roomwithaword.entities.Word;
 
