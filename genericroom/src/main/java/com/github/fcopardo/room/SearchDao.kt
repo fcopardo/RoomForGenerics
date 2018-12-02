@@ -33,7 +33,7 @@ abstract class SearchDao<T, X> : BaseDao<T>() {
             if (fieldName == null) {
                 for (field in myClass?.fields!!) {
                     field.declaredAnnotations.iterator().forEach {
-                        if (it.javaClass.equals(PrimaryKey::class.java)){
+                        if (it.javaClass == PrimaryKey::class.java){
                             addIdField(myClass!!.canonicalName, field.name)
                             fieldName = field.name
                         }

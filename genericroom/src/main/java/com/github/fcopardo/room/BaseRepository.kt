@@ -14,35 +14,63 @@ open class BaseRepository<T, X : BaseDao<T>> {
         fun getDatabase(application: Application) : RoomDatabase
     }
 
-    private var myDao: X
-    private var allResults: MutableLiveData<MutableList<T>>? = null
-    private var observers : HashMap<String, InvalidationTracker.Observer>? = null
+    companion object {
+        private var daoFactoryMethod : HashMap<String, Method> = HashMap()
+
+        @JvmStatic fun getMethod(daoClass : String) : Method?{
+            return daoFactoryMethod[daoClass]
+        }
+
+        fun <T> getMethod(aClass : Class<T>) : Method?{
+            return if (daoFactoryMethod[aClass.simpleName]!=null) daoFactoryMethod[aClass.simpleName]
+            else daoFactoryMethod[aClass.simpleName.decapitalize()]
+        }
+
+        @JvmStatic fun cacheMethod(daoClass : String, method : Method) {
+            daoFactoryMethod[daoClass] = method
+        }
+
+    }
+
+    protected var myDao: X
+    protected var allResults: MutableLiveData<MutableList<T>>? = null
+    protected var observers : HashMap<String, InvalidationTracker.Observer>? = null
 
     constructor(application : Application, aClass : Class<X>, provider: DatabaseProvider){
         var database = provider.getDatabase(application)
 
-        var method : Method? = if(database::class.java.getMethod(aClass.simpleName.decapitalize()) != null)
-            database::class.java.getMethod(aClass.simpleName.decapitalize())
-        else
-            database::class.java.getMethod(aClass.simpleName)
+        var method : Method? = getMethod(database::class.java)
+
+        if(method==null){
+            try {
+                method = database::class.java.getMethod(aClass.simpleName.decapitalize())
+            }catch (e : NoSuchMethodException){
+                method = database::class.java.getMethod(aClass.simpleName)
+            }
+        }
+
 
         method?.isAccessible = true
         myDao = method?.invoke(database) as X
         myDao.setDB<X>(database)
 
+        setObservers()
+        allResults = myDao.selectAll()
+    }
+
+    protected fun setObservers(){
         observers = HashMap()
 
         var observer : InvalidationTracker.Observer = object : InvalidationTracker.Observer(myDao.getTableName()) {
             override fun onInvalidated(tables: Set<String>) {
                 Log.e("RoomDB", "trigged repo observer")
-                myDao.triggerUpdate(allResults!!)
+                if(tables.contains(myDao.getTableName())) {
+                    myDao.triggerUpdate(allResults!!)
+                }
             }
         }
-
         observers?.put(myDao.getTableName(), observer)
-
         myDao.getDatabase()?.invalidationTracker?.addObserver(observer)
-        allResults = myDao.selectAll()
     }
 
     fun getAll(): LiveData<MutableList<T>>? {
