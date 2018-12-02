@@ -46,7 +46,6 @@ abstract class SearchDao<T, X> : BaseDao<T>() {
         }
 
         override fun onPostExecute(result: T?) {
-            Log.e("RoomDao", "values reset")
             data.value = result
         }
 
