@@ -1,10 +1,9 @@
 package com.github.fcopardo.room
 
 import android.app.Application
-import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 
-abstract class RepositoryWrapper<T, X: BaseDao<T>> (application: Application, daoClass: Class<X>, provider
+class RepositoryWrapper<T, X: BaseDao<T>> (application: Application, daoClass: Class<X>, provider
 : BaseRepository.DatabaseProvider) {
 
     private var repo : BaseRepository<T, X> = BaseRepository(application, daoClass, provider)

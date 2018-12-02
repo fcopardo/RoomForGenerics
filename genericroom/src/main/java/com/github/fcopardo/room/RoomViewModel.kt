@@ -7,31 +7,26 @@ import android.arch.lifecycle.LiveData
 abstract class RoomViewModel<T, X: BaseDao<T>> (application: Application, daoClass: Class<X>, provider : BaseRepository.DatabaseProvider)
     : AndroidViewModel(application) {
 
-    private var repo : BaseRepository<T, X> = BaseRepository(application, daoClass, provider)
-    private var allData: LiveData<MutableList<T>>? = null
-
-    init {
-        allData = repo.getAll()
-    }
+    private var repositoryWrapper: RepositoryWrapper<T, X> = RepositoryWrapper(application, daoClass, provider)
 
     fun getAllData() : LiveData<MutableList<T>>?{
-        return allData
+        return repositoryWrapper.getAllData()
     }
 
     fun persist(data : T){
-        repo.persist(data)
+        repositoryWrapper.persist(data)
     }
 
     fun delete(data : T){
-        repo.delete(data)
+        repositoryWrapper.delete(data)
     }
 
     fun insert(data : T){
-        repo.insert(data)
+        repositoryWrapper.insert(data)
     }
 
     override fun onCleared(){
         super.onCleared()
-        repo.tearDown()
+        repositoryWrapper.onCleared()
     }
 }
