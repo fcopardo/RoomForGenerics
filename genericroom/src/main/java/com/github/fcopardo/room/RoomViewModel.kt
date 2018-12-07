@@ -7,7 +7,7 @@ import android.arch.lifecycle.LiveData
 abstract class RoomViewModel<T, X: BaseDao<T>> (application: Application, daoClass: Class<X>, provider : BaseRepository.DatabaseProvider)
     : AndroidViewModel(application) {
 
-    private var repositoryWrapper: RepositoryWrapper<T, X> = RepositoryWrapper(application, daoClass, provider)
+    protected open var repositoryWrapper : RepositoryWrapperActions<T> = RepositoryWrapper(application, daoClass, provider)
 
     fun getAllData() : LiveData<MutableList<T>>?{
         return repositoryWrapper.getAllData()

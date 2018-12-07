@@ -8,7 +8,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.util.Log
 import java.lang.reflect.Method
 
-open class BaseRepository<T, X : BaseDao<T>> {
+open class BaseRepository<T, X : BaseDao<T>> : RepositoryActions<T>{
 
     interface DatabaseProvider{
         fun getDatabase(application: Application) : RoomDatabase
@@ -21,7 +21,7 @@ open class BaseRepository<T, X : BaseDao<T>> {
             return daoFactoryMethod[daoClass]
         }
 
-        fun <T> getMethod(aClass : Class<T>) : Method?{
+        @JvmStatic fun <T> getMethod(aClass : Class<T>) : Method?{
             return if (daoFactoryMethod[aClass.simpleName]!=null) daoFactoryMethod[aClass.simpleName]
             else daoFactoryMethod[aClass.simpleName.decapitalize()]
         }
@@ -42,10 +42,10 @@ open class BaseRepository<T, X : BaseDao<T>> {
         var method : Method? = getMethod(database::class.java)
 
         if(method==null){
-            try {
-                method = database::class.java.getMethod(aClass.simpleName.decapitalize())
+            method = try {
+                database::class.java.getMethod(aClass.simpleName.decapitalize())
             }catch (e : NoSuchMethodException){
-                method = database::class.java.getMethod(aClass.simpleName)
+                database::class.java.getMethod(aClass.simpleName)
             }
         }
 
@@ -73,23 +73,23 @@ open class BaseRepository<T, X : BaseDao<T>> {
         myDao.getDatabase()?.invalidationTracker?.addObserver(observer)
     }
 
-    fun getAll(): LiveData<MutableList<T>>? {
+    override fun getAll(): LiveData<MutableList<T>>? {
         return allResults
     }
 
-    fun insert(data : T){
+    override fun insert(data : T){
         cud(data, 1)
     }
 
-    fun update(data : T){
+    override fun update(data : T){
         cud(data, 2)
     }
 
-    fun persist(data : T){
+    override fun persist(data : T){
         cud(data, 3)
     }
 
-    fun delete(data : T){
+    override fun delete(data : T){
         cud(data, 4)
     }
 
@@ -116,7 +116,7 @@ open class BaseRepository<T, X : BaseDao<T>> {
         Thread(Task(data, operation)).start()
     }
 
-    fun tearDown(){
+    override fun tearDown(){
         observers?.forEach{
             myDao.getDatabase()?.invalidationTracker?.removeObserver(it.value)
             observers?.remove(it.key)
