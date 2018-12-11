@@ -1,7 +1,7 @@
 package com.pardo.roomwithaword
 
 import android.app.Application
-import com.github.fcopardo.room.BaseRepository
+import com.github.fcopardo.room.base.BaseRepository
 import com.pardo.roomwithaword.dao.WordDao
 import com.pardo.roomwithaword.entities.Word
 

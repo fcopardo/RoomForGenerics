@@ -7,20 +7,19 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
-import com.github.fcopardo.room.BaseDao;
 import com.pardo.roomwithaword.dao.WordDao;
 import com.pardo.roomwithaword.entities.Word;
 
 @Database(entities = {Word.class}, version = 1, exportSchema = false)
-public abstract class MyDatabase extends RoomDatabase {
-    private static volatile MyDatabase INSTANCE;
+public abstract class MyDatabaseJ extends RoomDatabase {
+    private static volatile MyDatabaseJ INSTANCE;
 
-    static MyDatabase getDatabase(final Context context) {
+    static MyDatabaseJ getDatabase(final Context context) {
         if (INSTANCE == null) {
-            synchronized (MyDatabase.class) {
+            synchronized (MyDatabaseJ.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            MyDatabase.class, "word_database")
+                            MyDatabaseJ.class, "word_database")
                             .build();
                 }
             }
@@ -41,9 +40,9 @@ public abstract class MyDatabase extends RoomDatabase {
 
     private static class PopulateDbAsync extends AsyncTask<Void, Void, Void> {
 
-        private final BaseDao<Word> mDao;
+        private final WordDao mDao;
 
-        PopulateDbAsync(MyDatabase db) {
+        PopulateDbAsync(MyDatabaseJ db) {
             mDao = db.wordDao();
         }
 

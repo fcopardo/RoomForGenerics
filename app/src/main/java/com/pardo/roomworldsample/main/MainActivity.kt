@@ -8,6 +8,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.CoordinatorLayout
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.support.v4.view.AsyncLayoutInflater
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
@@ -38,16 +39,6 @@ class MainActivity : AppCompatActivity() {
     var myUI : MainUI? = null
     var wordViewModel : WordViewModel? = null
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater: MenuInflater = menuInflater
-        inflater.inflate(R.menu.menu_main, menu)
-
-        menu.findItem(R.id.menu_search).setOnMenuItemClickListener {
-            MainActivity@this.onSearchRequested()
-        }
-
-        return true
-    }
 
     override fun onResume() {
         super.onResume()
@@ -92,7 +83,10 @@ class MainActivity : AppCompatActivity() {
         if (Intent.ACTION_SEARCH == intent.action) {
             val query = intent.getStringExtra(SearchManager.QUERY)
             wordViewModel?.find(query)?.observe(this, Observer<Word?> {
-                t -> Toast.makeText(getThis(), "the word is "+t?.getWord(), Toast.LENGTH_SHORT).show()
+                t ->
+                var snackbar = Snackbar.make(findViewById(android.R.id.content), "the Word is "+t?.getWord(), Snackbar.LENGTH_SHORT)
+                snackbar.view.setBackgroundColor(getThis<MainActivity>().resources.getColor(android.R.color.holo_red_dark))
+                snackbar.show()
             })
         }
     }

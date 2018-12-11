@@ -1,6 +1,5 @@
-package com.github.fcopardo.room
+package com.github.fcopardo.room.base
 
-import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.db.SimpleSQLiteQuery
 import android.arch.persistence.db.SupportSQLiteQuery
@@ -35,7 +34,7 @@ abstract class BaseDao<T> : GenericDao<T> {
     private var database : RoomDatabase? = null
 
     @RawQuery
-    abstract fun selectAll(query: SupportSQLiteQuery): MutableList<T>
+    protected abstract fun selectAll(query: SupportSQLiteQuery): MutableList<T>
 
     fun selectAll(): MutableLiveData<MutableList<T>> {
         Log.e("RoomDao", "called select all")
@@ -45,7 +44,7 @@ abstract class BaseDao<T> : GenericDao<T> {
     }
 
     @RawQuery
-    abstract fun deleteAll(query: SupportSQLiteQuery): Boolean
+    protected abstract fun deleteAll(query: SupportSQLiteQuery): Boolean
 
     fun deleteAll(): Boolean {
         try {

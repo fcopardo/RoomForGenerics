@@ -1,4 +1,4 @@
-package com.github.fcopardo.room
+package com.github.fcopardo.room.primaryfind
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.db.SimpleSQLiteQuery
@@ -6,9 +6,10 @@ import android.arch.persistence.db.SupportSQLiteQuery
 import android.arch.persistence.room.RawQuery
 import android.os.AsyncTask
 import android.util.Log
+import com.github.fcopardo.room.base.BaseDao
 
 
-abstract class SearchDao<T : Any, X> : BaseDao<T>() {
+abstract class SearchDao<T, X> : BaseDao<T>() {
 
     inner class FindTask(var data: MutableLiveData<T?>, var id :  X) : AsyncTask<Void, Void, T?>() {
 

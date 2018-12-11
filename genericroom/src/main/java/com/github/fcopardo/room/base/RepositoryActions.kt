@@ -1,4 +1,4 @@
-package com.github.fcopardo.room
+package com.github.fcopardo.room.base
 
 import android.arch.lifecycle.LiveData
 

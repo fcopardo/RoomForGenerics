@@ -1,4 +1,4 @@
-package com.github.fcopardo.room
+package com.github.fcopardo.room.base
 
 import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
@@ -7,26 +7,26 @@ import android.arch.lifecycle.LiveData
 abstract class RoomViewModel<T, X: BaseDao<T>> (application: Application, daoClass: Class<X>, provider : BaseRepository.DatabaseProvider)
     : AndroidViewModel(application) {
 
-    protected open var repositoryWrapper : RepositoryWrapperActions<T> = RepositoryWrapper(application, daoClass, provider)
+    protected open var repository : RepositoryActions<T> = BaseRepository(application, daoClass, provider)
 
     fun getAllData() : LiveData<MutableList<T>>?{
-        return repositoryWrapper.getAllData()
+        return repository.getAll()
     }
 
     fun persist(data : T){
-        repositoryWrapper.persist(data)
+        repository.persist(data)
     }
 
     fun delete(data : T){
-        repositoryWrapper.delete(data)
+        repository.delete(data)
     }
 
     fun insert(data : T){
-        repositoryWrapper.insert(data)
+        repository.insert(data)
     }
 
     override fun onCleared(){
         super.onCleared()
-        repositoryWrapper.onCleared()
+        repository.tearDown()
     }
 }

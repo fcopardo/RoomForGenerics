@@ -1,4 +1,4 @@
-package com.github.fcopardo.room
+package com.github.fcopardo.room.base
 
 import android.app.Application
 import android.arch.lifecycle.LiveData
@@ -8,7 +8,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.util.Log
 import java.lang.reflect.Method
 
-open class BaseRepository<T, X : BaseDao<T>> : RepositoryActions<T>{
+open class BaseRepository<T, X : BaseDao<T>> : RepositoryActions<T> {
 
     interface DatabaseProvider{
         fun getDatabase(application: Application) : RoomDatabase
