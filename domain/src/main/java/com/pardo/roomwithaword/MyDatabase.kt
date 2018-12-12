@@ -1,6 +1,7 @@
 package com.pardo.roomwithaword
 
 import android.arch.persistence.db.SupportSQLiteDatabase
+import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
@@ -9,6 +10,7 @@ import com.pardo.roomwithaword.dao.WordDao
 import com.pardo.roomwithaword.dao.WordDaoClassic
 import com.pardo.roomwithaword.entities.Word
 
+@Database(entities = [Word::class], version = 1, exportSchema = false)
 abstract class MyDatabase : RoomDatabase() {
 
     companion object {
