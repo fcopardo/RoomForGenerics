@@ -14,5 +14,7 @@ interface RepositoryActions<T> {
 
     fun delete(data : T)
 
+    fun deleteAll() : LiveData<Boolean>
+
     fun tearDown()
 }

@@ -17,6 +17,10 @@ class MainUI : FrameLayout, UI<List<Word>> {
         adapter.setElements(data)
     }
 
+    fun clearData(){
+        adapter.clear()
+    }
+
     override fun asView(): View {
         return this
     }

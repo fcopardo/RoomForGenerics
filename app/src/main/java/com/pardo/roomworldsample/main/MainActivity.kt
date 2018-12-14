@@ -74,6 +74,11 @@ class MainActivity : AppCompatActivity() {
                     getThis<MainActivity>().onSearchRequested()
                 }
                 delete = findViewById(R.id.btb_delete)
+                delete.setOnClickListener {
+                    wordViewModel?.deleteAll()?.observe(getThis<MainActivity>(), Observer<Boolean> { result ->
+                        if(result!!) myUI?.clearData()
+                    })
+                }
             }
         })
 

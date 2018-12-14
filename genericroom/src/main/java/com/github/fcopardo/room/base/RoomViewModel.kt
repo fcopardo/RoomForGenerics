@@ -25,6 +25,10 @@ abstract class RoomViewModel<T, X: BaseDao<T>> (application: Application, daoCla
         repository.insert(data)
     }
 
+    fun deleteAll() : LiveData<Boolean> {
+        return repository.deleteAll()
+    }
+
     override fun onCleared(){
         super.onCleared()
         repository.tearDown()

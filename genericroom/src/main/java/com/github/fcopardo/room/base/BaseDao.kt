@@ -31,19 +31,36 @@ abstract class BaseDao<T> : GenericDao<T> {
         }
     }
 
+    inner class DeleteTask(var data : MutableLiveData<Boolean>) : AsyncTask<Void, Void, MutableLiveData<Boolean>>() {
+        override fun doInBackground(vararg params: Void?): MutableLiveData<Boolean> {
+            return return try{
+                deleteAll(SimpleSQLiteQuery("DELETE FROM '" + getTableName()+"'"))
+                data.value = true
+                data
+            } catch(e : java.lang.Exception){
+                e.printStackTrace()
+                data.value = false
+                data
+            }
+        }
+
+        fun executeMe() : DeleteTask {
+            executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+            return this
+        }
+    }
+
     protected var myClass: Class<T>? = null
     private var database : RoomDatabase? = null
     protected var observers : HashMap<String, InvalidationTracker.Observer>? = null
     protected var allResults = MutableLiveData<MutableList<T>>()
+    protected var deleteDone = MutableLiveData<Boolean>()
 
     @RawQuery
     protected abstract fun selectAll(query: SupportSQLiteQuery): MutableList<T>
 
     fun selectAll(): MutableLiveData<MutableList<T>> {
         Log.e("RoomDao", "called select all")
-        /*val data = MutableLiveData<MutableList<T>>()
-        Task(data).executeMe()
-        return data*/
         Task(allResults).executeMe()
         return allResults
     }
@@ -51,13 +68,13 @@ abstract class BaseDao<T> : GenericDao<T> {
     @RawQuery
     protected abstract fun deleteAll(query: SupportSQLiteQuery): Boolean
 
-    fun deleteAll(): Boolean {
+    fun deleteAll(): MutableLiveData<Boolean> {
         try {
-            deleteAll(SimpleSQLiteQuery("DELETE FROM " + getTableName()))
+            DeleteTask(deleteDone).executeMe()
         } catch (e: Exception) {
-            return false
+            e.printStackTrace()
         }
-        return true
+        return deleteDone
     }
 
     fun triggerUpdate(data : MutableLiveData<MutableList<T>>) {
@@ -70,6 +87,7 @@ abstract class BaseDao<T> : GenericDao<T> {
 
     fun <X: BaseDao<T>> setDB(db: RoomDatabase) : X {
         database = db
+        setObservers()
         return this as X
     }
 
@@ -77,7 +95,7 @@ abstract class BaseDao<T> : GenericDao<T> {
         return database
     }
 
-    protected fun setObservers(){
+    protected open fun setObservers(){
         observers = HashMap()
 
         var observer : InvalidationTracker.Observer = object : InvalidationTracker.Observer(getTableName()) {
@@ -92,7 +110,7 @@ abstract class BaseDao<T> : GenericDao<T> {
         getDatabase()?.invalidationTracker?.addObserver(observer)
     }
 
-    protected fun tearDown(){
+    fun tearDown(){
         observers?.forEach{
             getDatabase()?.invalidationTracker?.removeObserver(it.value)
             observers?.remove(it.key)

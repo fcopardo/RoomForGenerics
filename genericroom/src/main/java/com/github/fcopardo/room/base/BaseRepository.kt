@@ -3,7 +3,6 @@ package com.github.fcopardo.room.base
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
-import android.arch.persistence.room.InvalidationTracker
 import android.arch.persistence.room.RoomDatabase
 import android.util.Log
 import java.lang.reflect.Method
@@ -33,8 +32,6 @@ open class BaseRepository<T, X : BaseDao<T>> : RepositoryActions<T> {
     }
 
     protected var myDao: X
-    protected var allResults: MutableLiveData<MutableList<T>>? = null
-    protected var observers : HashMap<String, InvalidationTracker.Observer>? = null
 
     constructor(application : Application, aClass : Class<X>, provider: DatabaseProvider){
         var database = provider.getDatabase(application)
@@ -53,28 +50,11 @@ open class BaseRepository<T, X : BaseDao<T>> : RepositoryActions<T> {
         method?.isAccessible = true
         myDao = method?.invoke(database) as X
         myDao.setDB<X>(database)
-
-        setObservers()
-        allResults = myDao.selectAll()
-    }
-
-    protected fun setObservers(){
-        observers = HashMap()
-
-        var observer : InvalidationTracker.Observer = object : InvalidationTracker.Observer(myDao.getTableName()) {
-            override fun onInvalidated(tables: Set<String>) {
-                Log.e("RoomDB", "trigged repo observer")
-                if(tables.contains(myDao.getTableName())) {
-                    myDao.triggerUpdate(allResults!!)
-                }
-            }
-        }
-        observers?.put(myDao.getTableName(), observer)
-        myDao.getDatabase()?.invalidationTracker?.addObserver(observer)
+        myDao.selectAll()
     }
 
     override fun getAll(): LiveData<MutableList<T>>? {
-        return allResults
+        return myDao.selectAll()
     }
 
     override fun insert(data : T){
@@ -91,6 +71,10 @@ open class BaseRepository<T, X : BaseDao<T>> : RepositoryActions<T> {
 
     override fun delete(data : T){
         cud(data, 4)
+    }
+
+    override fun deleteAll() : LiveData<Boolean>{
+        return myDao.deleteAll()
     }
 
     private fun cud(data : T, operation : Int){
@@ -117,9 +101,6 @@ open class BaseRepository<T, X : BaseDao<T>> : RepositoryActions<T> {
     }
 
     override fun tearDown(){
-        observers?.forEach{
-            myDao.getDatabase()?.invalidationTracker?.removeObserver(it.value)
-            observers?.remove(it.key)
-        }
+        myDao.tearDown()
     }
 }

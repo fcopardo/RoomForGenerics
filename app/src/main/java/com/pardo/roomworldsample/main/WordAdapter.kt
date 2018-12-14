@@ -32,4 +32,9 @@ class WordAdapter : RecyclerView.Adapter<GenericViewHolder<CellUI, Word>>() {
         elements.addAll(list)
         notifyDataSetChanged()
     }
+
+    fun clear(){
+        elements.clear()
+        notifyDataSetChanged()
+    }
 }
