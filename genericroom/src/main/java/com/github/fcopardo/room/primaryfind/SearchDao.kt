@@ -29,7 +29,7 @@ abstract class SearchDao<T, X> : BaseDao<T>() {
     }
 
     @RawQuery
-    abstract fun find(query: SupportSQLiteQuery): T?
+    protected abstract fun find(query: SupportSQLiteQuery): T?
 
     fun find(id : X): MutableLiveData<T?> {
         Log.e("RoomDao", "called find")

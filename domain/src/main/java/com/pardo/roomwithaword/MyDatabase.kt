@@ -8,6 +8,7 @@ import android.content.Context
 import android.os.AsyncTask
 import com.pardo.roomwithaword.dao.WordDao
 import com.pardo.roomwithaword.dao.WordDaoClassic
+import com.pardo.roomwithaword.dao.WordDaoSimple
 import com.pardo.roomwithaword.entities.Word
 
 @Database(entities = [Word::class], version = 1, exportSchema = false)
@@ -37,6 +38,7 @@ abstract class MyDatabase : RoomDatabase() {
     }
 
     abstract fun wordDao(): WordDao
+    abstract fun wordDaoSimple(): WordDaoSimple
     abstract fun wordDaoClassic(): WordDaoClassic
 
     private val sRoomDatabaseCallback = object : RoomDatabase.Callback() {

@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import android.arch.persistence.db.SimpleSQLiteQuery
 import android.arch.persistence.db.SupportSQLiteQuery
 import android.arch.persistence.room.Dao
+import android.arch.persistence.room.InvalidationTracker
 import android.arch.persistence.room.RawQuery
 import android.arch.persistence.room.RoomDatabase
 import android.os.AsyncTask
@@ -32,15 +33,19 @@ abstract class BaseDao<T> : GenericDao<T> {
 
     protected var myClass: Class<T>? = null
     private var database : RoomDatabase? = null
+    protected var observers : HashMap<String, InvalidationTracker.Observer>? = null
+    protected var allResults = MutableLiveData<MutableList<T>>()
 
     @RawQuery
     protected abstract fun selectAll(query: SupportSQLiteQuery): MutableList<T>
 
     fun selectAll(): MutableLiveData<MutableList<T>> {
         Log.e("RoomDao", "called select all")
-        val data = MutableLiveData<MutableList<T>>()
+        /*val data = MutableLiveData<MutableList<T>>()
         Task(data).executeMe()
-        return data
+        return data*/
+        Task(allResults).executeMe()
+        return allResults
     }
 
     @RawQuery
@@ -70,6 +75,28 @@ abstract class BaseDao<T> : GenericDao<T> {
 
     fun getDatabase() : RoomDatabase?{
         return database
+    }
+
+    protected fun setObservers(){
+        observers = HashMap()
+
+        var observer : InvalidationTracker.Observer = object : InvalidationTracker.Observer(getTableName()) {
+            override fun onInvalidated(tables: Set<String>) {
+                Log.e("RoomDB", "trigged repo observer")
+                if(tables.contains(getTableName())) {
+                    triggerUpdate(allResults!!)
+                }
+            }
+        }
+        observers?.put(getTableName(), observer)
+        getDatabase()?.invalidationTracker?.addObserver(observer)
+    }
+
+    protected fun tearDown(){
+        observers?.forEach{
+            getDatabase()?.invalidationTracker?.removeObserver(it.value)
+            observers?.remove(it.key)
+        }
     }
 
 }
