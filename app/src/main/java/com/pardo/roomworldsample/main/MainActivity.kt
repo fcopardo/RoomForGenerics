@@ -12,8 +12,6 @@ import android.support.design.widget.Snackbar
 import android.support.v4.view.AsyncLayoutInflater
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.Menu
-import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -111,6 +109,6 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-fun <T: Activity> Activity.getThis() : T{
+fun <T: Activity> Activity.getThis() : T {
     return this as T
 }

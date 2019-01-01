@@ -31,17 +31,20 @@ abstract class BaseDao<T> : GenericDao<T> {
         }
     }
 
-    inner class DeleteTask(var data : MutableLiveData<Boolean>) : AsyncTask<Void, Void, MutableLiveData<Boolean>>() {
-        override fun doInBackground(vararg params: Void?): MutableLiveData<Boolean> {
-            return return try{
+    inner class DeleteTask(var data : MutableLiveData<Boolean>) : AsyncTask<Void, MutableLiveData<Boolean>, Boolean>() {
+        override fun doInBackground(vararg params: Void?): Boolean {
+            return try{
                 deleteAll(SimpleSQLiteQuery("DELETE FROM '" + getTableName()+"'"))
-                data.value = true
-                data
+                true
             } catch(e : java.lang.Exception){
                 e.printStackTrace()
-                data.value = false
-                data
+                false
             }
+        }
+
+        override fun onPostExecute(result: Boolean?) {
+            super.onPostExecute(result)
+            data.value = result
         }
 
         fun executeMe() : DeleteTask {
